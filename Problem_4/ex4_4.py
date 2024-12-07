@@ -78,21 +78,21 @@ image = plt.imread('tiger.png')
 image_haar = haar2D(image)
 image_hat = ihaar2D(image_haar)
 
-
+plt.figure()
+plt.tight_layout()
 plt.subplot(1,3,1)
-plt.title('Original image')
+plt.title('Original')
 plt.axis('off')
 plt.imshow(image, cmap='gray', interpolation='lanczos')
 plt.subplot(1,3,2)
-plt.title('Haar transformed image')
+plt.title('Haar tf')
 plt.axis('off')
 plt.imshow(image_haar, cmap='gray', interpolation='lanczos')
 plt.subplot(1,3,3)
-plt.title('inverse Haar transformed image')
+plt.title('inverse Haar tf')
 plt.axis('off')
 plt.imshow(image_hat, cmap='gray', interpolation='lanczos')
-plt.show()
-
+plt.savefig('ex4_4_3.png')
 
 
 #######################################################
@@ -133,17 +133,87 @@ image_haar = haar2D_k(image, 3)
 image_hat = ihaar2D_k(image_haar, 3)
 
 # plot all three images
+plt.figure()
 plt.subplot(1,3,1)
-plt.title('Original image')
+plt.title('Original')
 plt.axis('off')
 plt.imshow(image, cmap='gray', interpolation='lanczos')
 plt.subplot(1,3,2)
-plt.title('third order Haar transformed image')
+plt.title(r'$3^{rd}$ order Haar tf')
 plt.axis('off')
 plt.imshow(image_haar, cmap='gray', interpolation='lanczos')
 plt.subplot(1,3,3)
-plt.title('inverse Haar transformed image')
+plt.title('inverse Haar tf')
 plt.axis('off')
 plt.imshow(image_hat, cmap='gray', interpolation='lanczos')
+plt.savefig('ex4_4_4.png')
+
+#######################################################
+
+# 4.4.5 fuse two clock images together with a 3rd order haar transform
+
+def fuse_images(image1: np.array, image2: np.array, k: int) -> np.array:
+    # Ensure the images are the same size
+    assert image1.shape == image2.shape, "Images must have the same dimensions for fusion."
+    
+    # Ensure the images are floats
+    image1 = image1.astype(float)
+    image2 = image2.astype(float)
+    
+    N, M = image1.shape
+    fused_image = np.zeros((N, M), dtype=float)
+
+    for n in range (0, N//(2**k)):
+        for m in range (0, M//(2**k)):
+            fused_image[n, m] = (image1[n, m] + image2[n, m])/2.0
+
+    for n in range (N//(2**k), N):
+        for m in range (M//(2**k), M):
+            # take the higher magnitude pixel
+            if abs(image1[n, m]) > abs(image2[n, m]):
+                fused_image[n, m] = image1[n, m]
+            else:
+                fused_image[n, m] = image2[n, m]
+
+    return fused_image
+
+image1 = plt.imread('clockA.png')
+image2 = plt.imread('clockB.png')
+
+# Ensure grayscale
+if image1.ndim == 3:
+    image1 = np.mean(image1, axis=2)
+if image2.ndim == 3:
+    image2 = np.mean(image2, axis=2)
+
+image1_haar = haar2D_k(image1, 3)
+image2_haar = haar2D_k(image2, 3)
+
+fused_image = fuse_images(image1_haar, image2_haar, 3)
+
+#plt.figure()
+#plt.imshow(fused_image, cmap='gray', interpolation='lanczos')
+#plt.axis('off')
+
+
+fused_image_hat = ihaar2D_k(fused_image, 3)
+
+# plot all three images
+plt.figure()
+plt.subplot(1,3,1)
+plt.title('Original image 1')
+plt.axis('off')
+plt.imshow(image1, cmap='gray', interpolation='lanczos')
+plt.subplot(1,3,2)
+plt.title('Original image 2')
+plt.axis('off')
+plt.imshow(image2, cmap='gray', interpolation='lanczos')
+plt.subplot(1,3,3)
+plt.title('Fused image')
+plt.axis('off')
+plt.imshow(fused_image_hat, cmap='gray', interpolation='lanczos')
+plt.tight_layout()
+plt.savefig('ex4_4_5.png')
 plt.show()
+
 

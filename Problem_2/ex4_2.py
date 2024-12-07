@@ -17,10 +17,10 @@ c1 = np.array([2*np.sqrt(2),-np.sqrt(2/3),2*np.sqrt(2/5),2*np.sqrt(2/7)])
 f2 = np.poly1d([1,0,0,0,0,0])
 c2 = np.array([0,np.sqrt(6)/7,0,4/9*np.sqrt(2/7)])
 
-f3 = np.sin(x)
+f3 = np.sin(np.pi*x)
 # np.sqrt(14)*((np.pi)**2 -15)/np.pi**3
 # np.sqrt(6)/np.pi
-c3 = np.array([0,0.73771,0,-0.0337])
+c3 = np.array([0,0.77970,0,-0.61911])
 
 # define approximation functions
 f1_hat = np.poly1d(c1[0]*q0) + np.poly1d(c1[1]*q1) + np.poly1d(c1[2]*q2) + np.poly1d(c1[3]*q3)
